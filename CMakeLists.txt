@@ -10,7 +10,11 @@ include_directories(include ${OpenCV_INCLUDE_DIRS})
 # add_library(FeatureManager SHARED src/FeatureManager.cpp)
 # add_library(GMSMatcher SHARED src/GMSMatcher.cpp)
 # add_library(ImageLoader SHARED src/ImageLoader.cpp)
-add_library(ImagePair SHARED src/ImagePair.cpp src/FeatureManager.cpp src/ImageLoader.cpp src/GMSMatcher.cpp)
+add_library(ImagePair SHARED src/ImagePair.cpp 
+src/FeatureManager.cpp 
+src/ImageLoader.cpp 
+src/GMSMatcher.cpp 
+src/Utility.cpp)
 
 
 add_executable(te src/test.cpp)

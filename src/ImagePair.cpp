@@ -1,5 +1,8 @@
 #include "ImagePair.h"
 
+#define __DEBUG__
+#define __GMS__
+
 ImagePair::ImagePair(bool im)
 {
     this->isMatched = im;
@@ -12,10 +15,12 @@ ImagePair::ImagePair(Mat img1, Mat img2, bool im)
     this->isMatched = im;
 }
 
-ImagePair::ImagePair(unsigned int s, unsigned int e, bool im)
+ImagePair::ImagePair(unsigned int s, unsigned int e, Mat img1, Mat img2, bool im)
 {
     this->i = s;
     this->j = e;
+    this->img1 = img1.clone();
+    this->img2 = img2.clone();
     this->isMatched = im;
 }
 
@@ -100,18 +105,39 @@ void ImagePair::startMatch()
 
     Ptr<ORB> orb = ORB::create(10000);
 	orb->setFastThreshold(0);
-	orb->detectAndCompute(this->img1, Mat(), keypoints1, this->descriptor1);
-    orb->detectAndCompute(this->img2, Mat(), keypoints2, this->descriptor2);
+	// orb->detectAndCompute(this->img1, Mat(), keypoints1, this->descriptor1);
+    // orb->detectAndCompute(this->img2, Mat(), keypoints2, this->descriptor2);
     // orb->detectAndCompute(this->img1, Mat(), this->keypoints1, this->descriptor1);
     // orb->detectAndCompute(this->img2, Mat(), this->keypoints2, this->descriptor2);
+    #ifdef __GMS__
+        orb->detectAndCompute(this->img1, Mat(), keypoints1, this->descriptor1);
+        orb->detectAndCompute(this->img2, Mat(), keypoints2, this->descriptor2);
+    #else
+        orb->detectAndCompute(this->img1, Mat(), this->keypoints1, this->descriptor1);
+        orb->detectAndCompute(this->img2, Mat(), this->keypoints2, this->descriptor2);
+    #endif
 
     BFMatcher matcher(NORM_HAMMING);
     vector<DMatch> allMatches;
-    matcher.match(this->descriptor1, this->descriptor2, allMatches);
-    //matcher.match(this->descriptor1, this->descriptor2, this->trueMatches);
-    FeatureManager featureManager;
-    featureManager.filterWrongMatches(this->img1, this->img2, keypoints1, keypoints2,
-    this->keypoints1, this->keypoints2, allMatches, this->trueMatches, "GMS");
+
+    #ifdef __GMS__
+        matcher.match(this->descriptor1, this->descriptor2, allMatches);
+    #else
+        matcher.match(this->descriptor1, this->descriptor2, this->trueMatches);
+    #endif
+
+    #ifdef __GMS__
+        FeatureManager featureManager;
+        featureManager.filterWrongMatches(this->img1, this->img2, keypoints1, keypoints2,
+        this->keypoints1, this->keypoints2, allMatches, this->trueMatches, "GMS");
+    #endif
+
+    #ifdef __DEBUG__
+    
+    cout << "image pair (" << this->i << ", " << this->j << "): ";
+    cout << "Before ransac(using gms), there are " << this->trueMatches.size() << "matches" << endl; 
+
+    #endif
 }
 
 void ImagePair::estimateFundamentalMat()
@@ -119,6 +145,12 @@ void ImagePair::estimateFundamentalMat()
     FeatureManager featureManager;
     vector<KeyPoint> rkpts1, rkpts2;
     vector<DMatch> rMatches;
+
+    if(this->trueMatches.size() < 16) 
+    {
+        cout << "matches number " << trueMatches.size() << " < 16\n" << endl;
+        return;
+    }
 
     featureManager.filterWrongMatches(this->img1, this->img2, this->keypoints1, this->keypoints2,
     rkpts1, rkpts2, this->trueMatches, rMatches, "RANSAC");
@@ -134,6 +166,13 @@ void ImagePair::estimateFundamentalMat()
         this->keypoints2.push_back(rkpts2[i]);
         this->trueMatches.push_back(rMatches[i]);
     }
+
+    #ifdef __DEBUG__
+    
+    cout << "image pair (" << this->i << ", " << this->j << "): ";
+    cout << "after ransac(using gms),  there are " << this->trueMatches.size() << " matches\n" << endl; 
+
+    #endif
 }
 
 void ImagePair::estimateEssentialMat(Mat K)

@@ -7,29 +7,15 @@
 #include <ctime>
 #include <sys/time.h> 
 
-void saveImage(Mat img, string path)
-{
-	vector<int> compression_params;
-	compression_params.push_back(IMWRITE_PNG_COMPRESSION);
-	compression_params.push_back(9);
-	try {
-		imwrite(path + ".png", img, compression_params);
-	}
-	catch (cv::Exception& ex) {
-		cout << "Exception converting image to PNG format: %s\n" << ex.what();
-		return;
-	}
-}
+using namespace cv;
+using namespace std;
 
+void saveImage(Mat img, string path);
 
+double getCurrentTime();
 
-double getCurrentTime()  
-{  
-    struct timeval time ;  
-    if (gettimeofday(&time,NULL)){  
-        return 0;  
-    }  
-    return (double)time.tv_sec + (double)time.tv_usec * .000001;  
-} 
+Mat DrawInlier(Mat &src1, Mat &src2, vector<KeyPoint> &kpt1, vector<KeyPoint> &kpt2, vector<DMatch> &inlier, int type);
+
+void imresize(Mat &src, int height);
 
 #endif

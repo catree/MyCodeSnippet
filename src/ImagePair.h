@@ -33,7 +33,7 @@ private:
 public:
     ImagePair(bool im = false);
     ImagePair(Mat img1, Mat img2, bool im = false);
-    ImagePair(unsigned int s, unsigned int e, bool im = false);
+    ImagePair(unsigned int s, unsigned int e, Mat img1, Mat img2, bool im = false);
     ~ImagePair();
 
     void setIsMatched(bool);

@@ -1,6 +1,7 @@
 #include "ImageLoader.h"
 #include <opencv2/highgui.hpp>
 //#include <ctime>
+#include "Utility.h"
 
 
 void ImageLoader::loadImage()
@@ -37,6 +38,7 @@ void ImageLoader::load()
 	for (int i = 0; i < imgList.size(); i++)
 	{
 		temp = imread(imgList[i]);
+		imresize(temp, 480);
 		imgBuffer.push_back(temp);
 	}
 	cout << imgList.size() << " images has been chosen\n";
