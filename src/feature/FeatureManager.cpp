@@ -7,7 +7,7 @@ void FeatureManager::ransacFilter(vector<KeyPoint> keypoints1, vector<KeyPoint> 
     {
         // --------------using ransac filtering wrong correspondences------------
         // RANSAC消除误匹配特征点 主要分为三个部分
-        // 1）根据matches将tezhengidan对其，将坐标转换为float类型
+        // 1）根据matches将特征点对其，将坐标转换为float类型
         // 2）使用求基础矩阵方法 findFundamentalMat， 得到RansacStatus
         // 3) 根据RansacStatus来将误匹配的点也即RansacStatus[i] = 0 的点筛除
     
@@ -44,6 +44,9 @@ void FeatureManager::GMSFilter(Mat img1, Mat img2,
     vector<KeyPoint>& rKeypoints1, vector<KeyPoint>& rKeypoints2,
     vector<DMatch> matches, vector<DMatch>& gmsMatches)
     {
+        imresize(img1, 480);
+        imresize(img2, 480);
+        
         vector<DMatch> tmpMatches;
         // GMS filter
         int num_inliers = 0;
@@ -93,7 +96,8 @@ void FeatureManager::GMSFilter(Mat img1, Mat img2,
 
             else
             {
-
+                cout << "Error occured in FeatureManager: ";
+                cout << "match type[ " << type << " ] doesn't exist!" << endl; 
             }
         }
 

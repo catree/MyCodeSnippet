@@ -4,12 +4,15 @@ project(SFM)
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
 find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
 
-add_library(ImageLoader SHARED src/ImageLoader.cpp)
-add_library(FeatureManager SHARED src/FeatureManager.cpp)
-add_library(GMSMatcher SHARED src/GMSMatcher.cpp)
+include_directories(include ${OpenCV_INCLUDE_DIRS})
 
-add_executable(main src/main.cpp)
+# add_library(FeatureManager SHARED src/FeatureManager.cpp)
+# add_library(GMSMatcher SHARED src/GMSMatcher.cpp)
+# add_library(ImageLoader SHARED src/ImageLoader.cpp)
+add_library(ImagePair SHARED src/ImagePair.cpp src/FeatureManager.cpp src/ImageLoader.cpp src/GMSMatcher.cpp)
 
-target_link_libraries(main ImageLoader FeatureManager GMSMatcher ${OpenCV_LIBS})
+
+add_executable(te src/test.cpp)
+
+target_link_libraries(te ImagePair ${OpenCV_LIBS})

@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC   -shared -Wl,-soname,libImagePair.so -o libImagePair.so CMakeFiles/ImagePair.dir/ImagePair.cpp.o  -L/usr/local/cuda/lib64 

@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC   -shared -Wl,-soname,libGMSMatcher.so -o libGMSMatcher.so CMakeFiles/GMSMatcher.dir/home/chenyu/文档/SfM/src/feature/GMSMatcher.cpp.o  -L/usr/local/cuda/lib64 
