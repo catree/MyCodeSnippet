@@ -135,7 +135,7 @@ void ImagePair::startMatch()
     #ifdef __DEBUG__
     
     cout << "image pair (" << this->i << ", " << this->j << "): ";
-    cout << "Before ransac(using gms), there are " << this->trueMatches.size() << "matches" << endl; 
+    cout << "Before ransac(using gms), there are " << this->trueMatches.size() << " matches" << endl; 
 
     #endif
 }

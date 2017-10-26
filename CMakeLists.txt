@@ -14,7 +14,8 @@ add_library(ImagePair SHARED src/ImagePair.cpp
 src/FeatureManager.cpp 
 src/ImageLoader.cpp 
 src/GMSMatcher.cpp 
-src/Utility.cpp)
+src/Utility.cpp
+src/EGGraph.cpp)
 
 
 add_executable(te src/test.cpp)

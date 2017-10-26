@@ -1,6 +1,7 @@
 //#include "ImageLoader.h"
 #include "FeatureManager.h"
 #include "ImagePair.h"
+#include "EGGraph.h"
 #include <ctime>
 #include <sys/time.h>
 #include "Utility.h"
@@ -38,8 +39,13 @@ int main()
         }
     }
     double e = getCurrentTime();
-    cout << "using " << e - s << " ms." << endl;
+    cout << "using " << e - s << " s." << endl;
 
+    // double s = getCurrentTime();
+    // EGGraph egGraph;
+    // egGraph.buildEGGraph(imgBuffer);
+    // double e = getCurrentTime();
+    // cout << "using " << e - s << " s." << endl;
     
     // imgPair.startMatch();
     // vector<KeyPoint> kp1, kp2;

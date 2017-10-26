@@ -36,6 +36,7 @@ void FeatureManager::ransacFilter(vector<KeyPoint> keypoints1, vector<KeyPoint> 
                 index++;
             }
         }
+        // cout << "rMatches size " << rMatches.size() << endl;
     }
 
 
