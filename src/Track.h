@@ -7,10 +7,15 @@
 using namespace std;
 using namespace cv;
 
+struct TrackNode
+{
+    int idx;            // image index
+    KeyPoint keypoint;  ;// keypoint in image[idx]
+}
+
 struct Track
 {
-    vector<KeyPoint> trackPoints;
-    vector<unsigned int> imgLists;
+    vector<TrackNode> track; 
 };
 
 #endif

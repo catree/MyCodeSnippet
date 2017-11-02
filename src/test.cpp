@@ -23,29 +23,31 @@ int main()
 
     vector<Mat> imgBuffer = imageLoader->getImgBuffer();
 
-    vector<ImagePair> imgPairLists;
+    // vector<ImagePair> imgPairLists;
     
-    double s = getCurrentTime();
-    for(unsigned int i = 0; i < imgBuffer.size(); i++)
-    {
-        for(unsigned int j = i + 1; j < imgBuffer.size(); j++)
-        {
-            imresize(imgBuffer[i], 480);
-            imresize(imgBuffer[j], 480);
-            ImagePair imgPair(i, j, imgBuffer[i], imgBuffer[j], false);
-            imgPair.startMatch();
-            imgPair.estimateFundamentalMat();
-            imgPairLists.push_back(imgPair);
-        }
-    }
-    double e = getCurrentTime();
-    cout << "using " << e - s << " s." << endl;
-
     // double s = getCurrentTime();
-    // EGGraph egGraph;
-    // egGraph.buildEGGraph(imgBuffer);
+    // for(unsigned int i = 0; i < imgBuffer.size(); i++)
+    // {
+    //     for(unsigned int j = i + 1; j < imgBuffer.size(); j++)
+    //     {
+    //         imresize(imgBuffer[i], 480);
+    //         imresize(imgBuffer[j], 480);
+    //         ImagePair imgPair(i, j, imgBuffer[i], imgBuffer[j], false);
+    //         imgPair.startMatch();
+    //         imgPair.estimateFundamentalMat();
+    //         imgPairLists.push_back(imgPair);
+    //     }
+    // }
     // double e = getCurrentTime();
     // cout << "using " << e - s << " s." << endl;
+
+    double s = getCurrentTime();
+    EGGraph egGraph;
+    egGraph.buildEGGraph(imgBuffer);
+    double e = getCurrentTime();
+    cout << "using " << e - s << " s." << endl;
+    
+
     
     // imgPair.startMatch();
     // vector<KeyPoint> kp1, kp2;

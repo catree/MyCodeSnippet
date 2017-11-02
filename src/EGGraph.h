@@ -31,6 +31,8 @@ struct EGEdge
     vector<KeyPoint> keypoints2;
     Mat descriptor1;
     Mat descriptor2;
+    int left;
+    int right;
 };
 
 class EGGraph

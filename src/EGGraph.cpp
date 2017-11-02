@@ -90,7 +90,7 @@ void EGGraph::buildEGNode(vector<Mat> imgBuffer)
         egNode.idx = i;
 
         this->nodeList.push_back(egNode);
-        cout << egNode.keypoints.size() << endl;
+        //cout << egNode.keypoints.size() << endl;
     }
     this->nodeNum = imgBuffer.size();
     cout << "build EGNode ends...\n" << endl;
@@ -109,6 +109,8 @@ void EGGraph::buildEGEdge(vector<Mat> imgBuffer)
         {
             this->startMatch(imgBuffer, i, j);
             this->estimateFundamentalMat(imgBuffer, i, j);
+            this->edgeMap[i][j].left = i;
+            this->edgeMap[i][j].right = j;
         }
     }
     cout << "build EGEdge ends...\n" << endl;
@@ -129,6 +131,7 @@ void EGGraph::estimateFundamentalMat(vector<Mat> imgBuffer, int i, int j)
 
     if(this->edgeMap[i][j].matches.size() < 16) 
     {
+        this->edgeMap[i][j].isMatch = false;
         cout << "matches number " << this->edgeMap[i][j].matches.size() << " < 16\n" << endl;
         return;
     }
@@ -150,6 +153,7 @@ void EGGraph::estimateFundamentalMat(vector<Mat> imgBuffer, int i, int j)
         this->edgeMap[i][j].keypoints2.push_back(rkpts2[k]);
         this->edgeMap[i][j].matches.push_back(rMatches[k]);
     }
+    this->edgeMap[i][j].isMatch = true;
 
     #ifdef __DEBUG__
         cout << "image pair (" << i << ", " << j << "): ";
