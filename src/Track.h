@@ -10,12 +10,27 @@ using namespace cv;
 struct TrackNode
 {
     int idx;            // image index
-    KeyPoint keypoint;  ;// keypoint in image[idx]
-}
+    Point2f point;  // keypoint in image[idx]
+    TrackNode* parent;  // parent node
+    int rank;           // rank of track node
+
+    bool operator==(const TrackNode* node) const
+    {
+        if(this->idx == node->idx 
+            && this->point.x == node->point.x 
+            && this->point.y == node->point.y)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+};
 
 struct Track
 {
     vector<TrackNode> track; 
 };
+
 
 #endif

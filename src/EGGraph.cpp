@@ -13,11 +13,21 @@ EGGraph::~EGGraph()
 {
     nodeList.clear();
 
-    for(int i = 0; i < this->nodeNum; i++)
-    {
-        delete [] edgeMap[i];
-    }
-    delete [] edgeMap;
+    // for(int i = 0; i < this->nodeNum; i++)
+    // {
+    //     // delete [] edgeMap[i];
+    //     for(int j = 0; j < this->nodeNum; j++)
+    //     {
+    //         edgeMap[i][j].trackNodes1.clear();
+    //         edgeMap[i][j].trackNodes2.clear();
+    //     }
+    // }
+
+    // for(int i = 0; i < this->nodeNum; i++)
+    // {
+    //     delete [] edgeMap[i];
+    // }
+    // delete [] edgeMap;
 }
 
 vector<EGNode> EGGraph::getEGNodeList() const
@@ -109,8 +119,8 @@ void EGGraph::buildEGEdge(vector<Mat> imgBuffer)
         {
             this->startMatch(imgBuffer, i, j);
             this->estimateFundamentalMat(imgBuffer, i, j);
-            this->edgeMap[i][j].left = i;
-            this->edgeMap[i][j].right = j;
+            this->edgeMap[i][j].keypoints2TrackNodes(this->edgeMap[i][j].keypoints1, this->edgeMap[i][j].trackNodes1, i);
+            this->edgeMap[i][j].keypoints2TrackNodes(this->edgeMap[i][j].keypoints2, this->edgeMap[i][j].trackNodes2, j);            
         }
     }
     cout << "build EGEdge ends...\n" << endl;
@@ -165,4 +175,6 @@ void EGGraph::estimateEssentialMat()
 {
 
 }
+
+
 

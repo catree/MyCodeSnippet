@@ -15,7 +15,8 @@ src/FeatureManager.cpp
 src/ImageLoader.cpp 
 src/GMSMatcher.cpp 
 src/Utility.cpp
-src/EGGraph.cpp)
+src/EGGraph.cpp
+src/TrackManager.cpp)
 
 
 add_executable(te src/test.cpp)
