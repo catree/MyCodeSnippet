@@ -106,6 +106,27 @@ void EGGraph::buildEGNode(vector<Mat> imgBuffer)
     cout << "build EGNode ends...\n" << endl;
 }
 
+
+
+void EGGraph::buildEGGraph(vector<Mat> imgBuffer)
+{
+    this->buildEGNode(imgBuffer);
+    this->buildEGEdge(imgBuffer);
+}
+
+void EGGraph::keypoints2TrackNodes(vector<KeyPoint> keypoints, vector<TrackNode*>& trackNodes, int idx)
+{
+    for(int i = 0; i < keypoints.size(); i++)
+    {
+        TrackNode* trackNode = new TrackNode();
+        trackNode->rank = 0;
+        trackNode->point.x = keypoints[i].pt.x;
+        trackNode->point.y = keypoints[i].pt.y;
+        trackNode->idx = idx;
+        trackNode->parent = trackNode;
+    }
+}
+
 void EGGraph::buildEGEdge(vector<Mat> imgBuffer)
 {
     cout << "build EGEdge begins...\n"; 
@@ -119,17 +140,61 @@ void EGGraph::buildEGEdge(vector<Mat> imgBuffer)
         {
             this->startMatch(imgBuffer, i, j);
             this->estimateFundamentalMat(imgBuffer, i, j);
-            this->edgeMap[i][j].keypoints2TrackNodes(this->edgeMap[i][j].keypoints1, this->edgeMap[i][j].trackNodes1, i);
-            this->edgeMap[i][j].keypoints2TrackNodes(this->edgeMap[i][j].keypoints2, this->edgeMap[i][j].trackNodes2, j);            
+            this->keypoints2TrackNodes(this->edgeMap[i][j].keypoints1, this->edgeMap[i][j].trackNodes1, i, i, j);
+            this->keypoints2TrackNodes(this->edgeMap[i][j].keypoints2, this->edgeMap[i][j].trackNodes2, j, i, j);            
         }
     }
     cout << "build EGEdge ends...\n" << endl;
 }
 
-void EGGraph::buildEGGraph(vector<Mat> imgBuffer)
+void EGGraph::keypoints2TrackNodes(vector<KeyPoint> keypoints, vector<TrackNode*>& trackNodes, int idx, int x, int y)
 {
-    this->buildEGNode(imgBuffer);
-    this->buildEGEdge(imgBuffer);
+    for(int i = 0; i < keypoints.size(); i++)
+    {
+        TrackNode* trackNode = new TrackNode();
+        trackNode->rank = 0;
+        trackNode->point.x = keypoints[i].pt.x;
+        trackNode->point.y = keypoints[i].pt.y;
+        trackNode->idx = idx;
+        trackNode->parent = trackNode;
+
+        TrackNode* tmp  = this->findTrackNode(x, y, trackNode);
+        if(tmp != NULL) 
+        {
+            trackNodes.push_back(tmp);
+            delete trackNode;
+        }
+        else trackNodes.push_back(trackNode);
+    }
+}
+
+TrackNode* EGGraph::findTrackNode(int x, int y, TrackNode* trackNode) const
+{
+    for(int i = 0; i <= x; i++)
+    {
+        for(int j = i + 1; j <= y; j++)
+        {
+            if(!(i == x && j == y) && !this->edgeMap[i][j].trackNodes1.empty())
+            {
+                for(int k = 0; k < this->edgeMap[i][j].trackNodes1.size(); k++)
+                {
+                    if(trackNode->idx == edgeMap[i][j].trackNodes1[k]->idx && 
+                        trackNode->point.x == edgeMap[i][j].trackNodes1[k]->point.x && 
+                        trackNode->point.y == edgeMap[i][j].trackNodes1[k]->point.y) 
+                        {
+                            return edgeMap[i][j].trackNodes1[k];
+                        }
+                    if(trackNode->idx == edgeMap[i][j].trackNodes2[k]->idx && 
+                        trackNode->point.x == edgeMap[i][j].trackNodes2[k]->point.x && 
+                        trackNode->point.y == edgeMap[i][j].trackNodes2[k]->point.y) 
+                        {
+                            return edgeMap[i][j].trackNodes2[k];
+                        }
+                }
+            }
+        }
+    }
+    return NULL;
 }
 
 void EGGraph::estimateFundamentalMat(vector<Mat> imgBuffer, int i, int j)

@@ -2,13 +2,16 @@
 
 #include <ctime>
 #include <sys/time.h>
-#include "Utility.h"
+#include <fstream>
+#include <string>
 
+#include "Utility.h"
 #include "FeatureManager.h"
-#include "ImagePair.h"
 #include "EGGraph.h"
 #include "TrackManager.h"
+#include "ImageLoader.h"
 
+using namespace std;
 
 double getCurrentTime()  
 {  
@@ -26,65 +29,55 @@ int main()
 
     vector<Mat> imgBuffer = imageLoader->getImgBuffer();
 
-    // vector<ImagePair> imgPairLists;
-    
-    // double s = getCurrentTime();
-    // for(unsigned int i = 0; i < imgBuffer.size(); i++)
-    // {
-    //     for(unsigned int j = i + 1; j < imgBuffer.size(); j++)
-    //     {
-    //         imresize(imgBuffer[i], 480);
-    //         imresize(imgBuffer[j], 480);
-    //         ImagePair imgPair(i, j, imgBuffer[i], imgBuffer[j], false);
-    //         imgPair.startMatch();
-    //         imgPair.estimateFundamentalMat();
-    //         imgPairLists.push_back(imgPair);
-    //     }
-    // }
-    // double e = getCurrentTime();
-    // cout << "using " << e - s << " s." << endl;
 
     double s = getCurrentTime();
     EGGraph egGraph;
     egGraph.buildEGGraph(imgBuffer);
-    double e = getCurrentTime();
-    cout << "using " << e - s << " s." << endl;
+
+    // double e = getCurrentTime();
+    // cout << "using " << e - s << " s." << endl;
     
+    // EGEdge** edge = egGraph.getEdgeMap();
+    // int num = egGraph.getNodeNum();
+    // ofstream of;
+    // for(int i = 0; i < num; i++)
+    // {
+    //     for(int j = i + 1; j < num; j++)
+    //     {
+    //         of.open("../result/features/feature" + to_string(i) + "-" + to_string(j) + ".txt", ios::out);
+    //         for(int k = 0; k < edge[i][j].keypoints1.size(); k++)
+    //         {
+    //             of << "(" << edge[i][j].keypoints1[k].pt.x << ", " << edge[i][j].keypoints1[k].pt.y << ") "
+    //                << "(" << edge[i][j].keypoints2[k].pt.x << ", " << edge[i][j].keypoints2[k].pt.y << ")" << endl;                
+    //         }
+    //         of.close();
+    //     }
+    // }
+
+
     TrackManager trackManager;
-    trackManager.mergeTracks(egGraph);
+    trackManager.merge(egGraph);
 
-
-    // imgPair.startMatch();
-    // vector<KeyPoint> kp1, kp2;
-    // vector<DMatch> matches_all;
-    // kp1 = imgPair.getKeypoints1();
-    // kp2 = imgPair.getKeypoints2();
-    // matches_all = imgPair.getMatches();
-
-
-    // cout << "before ransac, there are " << matches_all.size() << "matches." << endl;
-
-    // Mat orbMatches;
-    // drawMatches(img1, kp1, img2, kp2, matches_all, orbMatches);
-    // imshow("matches", orbMatches);
-
-    // estimate fundamental matrix
-    // imgPair.estimateFundamentalMat();
-
-    // vector<KeyPoint> ekp1, ekp2;
-    // vector<DMatch> ematches_all;
-    // ekp1 = imgPair.getKeypoints1();
-    // ekp2 = imgPair.getKeypoints2();
-    // ematches_all = imgPair.getMatches();
-
-    // cout << "after ransac, there are " << ematches_all.size() << "matches." << endl;
-    
-    // Mat eorbMatches;
-    // drawMatches(img1, ekp1, img2, ekp2, ematches_all, eorbMatches);
-    // imshow("matches", eorbMatches);
+    vector< vector<TrackNode*> > tracks = trackManager.getTracks();
+    ofstream of;
+    for(int i = 0; i < tracks.size(); i++)
+    {   
+        of.open("../result/tracks/track" + to_string(i) + ".txt", ios::out);
+        vector<TrackNode*> track = tracks[i];
+        for(int j = 0; j < tracks[i].size(); j++)
+        {
+            of << track[j]->idx << " (" << tracks[i][j]->point.x 
+            << ", " << tracks[i][j]->point.y << ")" << endl;
+        }
+        of.close();
+    }
+    cout << "track size is: " << tracks.size() << endl;
 
 
     delete imageLoader;
+   
+    // TrackManager trackManager;
+    // trackManager.testMerge();
 
     waitKey();
 }

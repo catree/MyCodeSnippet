@@ -1,0 +1,4 @@
+/home/chenyu/图片/david/B00.jpg
+/home/chenyu/图片/david/B01.jpg
+/home/chenyu/图片/david/B02.jpg
+/home/chenyu/图片/david/B03.jpg

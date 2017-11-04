@@ -37,18 +37,7 @@ struct EGEdge
     vector<TrackNode*> trackNodes1;
     vector<TrackNode*> trackNodes2;
 
-    void keypoints2TrackNodes(vector<KeyPoint> keypoints, vector<TrackNode*>& trackNodes, int idx)
-    {
-        for(int i = 0; i < keypoints.size(); i++)
-        {
-            TrackNode* trackNode = new TrackNode();
-            trackNode->rank = 0;
-            trackNode->point = keypoints[i].pt;
-            trackNode->idx = idx;
-            trackNode->parent = trackNode;
-            trackNodes.push_back(trackNode);
-        }
-    }
+
 };
 
 class EGGraph
@@ -74,7 +63,9 @@ public:
     void estimateFundamentalMat(vector<Mat> imgBuffer, int i, int j);
     void estimateEssentialMat();
 
-
+    void keypoints2TrackNodes(vector<KeyPoint> keypoints, vector<TrackNode*>& trackNodes, int idx);    
+    void keypoints2TrackNodes(vector<KeyPoint> keypoints, vector<TrackNode*>& trackNodes, int idx, int x, int y);
+    TrackNode* findTrackNode(int x, int y, TrackNode* trackNode) const;
 
 private:
     void startMatch(vector<Mat> imgBuffer, int i, int j);

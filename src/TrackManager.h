@@ -11,20 +11,30 @@ using namespace std;
 using namespace cv;
 
 
+// #define vector<TrackNode*> Track
+
 class TrackManager
 {
 private:
-    vector<Track> tracks;
+    vector< vector<TrackNode*> > tracks;
 
 
 public:
 
     void mergeTracks(EGGraph egGraph);
+    void merge(EGGraph egGraph);
 
-    vector<Track> getTracks() const;
+    vector< vector<TrackNode*> > getTracks() const;
 
-    void unite(TrackNode* node1, TrackNode* node2);
+    void unite(TrackNode*& node1, TrackNode*& node2);
     TrackNode* findSet(TrackNode* node);
+    
+    int findTrackNode(TrackNode* trackNode) const;
+
+    void testMerge();
+
+    void pruneTracks();
+
 };
 
 #endif
