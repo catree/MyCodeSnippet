@@ -172,7 +172,7 @@ TrackNode* EGGraph::findTrackNode(int x, int y, TrackNode* trackNode) const
 {
     for(int i = 0; i <= x; i++)
     {
-        for(int j = i + 1; j <= y; j++)
+        for(int j = i + 1; j <= y; j++) //
         {
             if(!(i == x && j == y) && !this->edgeMap[i][j].trackNodes1.empty())
             {

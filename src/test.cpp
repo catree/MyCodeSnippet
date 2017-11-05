@@ -57,6 +57,7 @@ int main()
 
     TrackManager trackManager;
     trackManager.merge(egGraph);
+    trackManager.pruneTracks();
 
     vector< vector<TrackNode*> > tracks = trackManager.getTracks();
     ofstream of;
@@ -72,7 +73,6 @@ int main()
         of.close();
     }
     cout << "track size is: " << tracks.size() << endl;
-
 
     delete imageLoader;
    

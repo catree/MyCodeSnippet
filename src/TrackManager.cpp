@@ -6,6 +6,9 @@
 #include <vector>
 #include <queue>
 #include <fstream>
+#include <cstring>
+
+#define MAX_SIZE 2000
 
 using namespace std;
 
@@ -264,5 +267,27 @@ void TrackManager::merge(EGGraph egGraph)
 
 void TrackManager::pruneTracks()
 {
-    
+    int count[MAX_SIZE];
+    bool isErased;
+    vector< vector<TrackNode*> >::iterator ite;
+    int i = 0;
+    for(ite = this->tracks.begin(); ite != this->tracks.end();)
+    {
+        memset(count, 0, sizeof(count));
+        isErased = false;
+        for(int j = 0; j < this->tracks[i].size(); j++)
+        {
+            if((++count[this->tracks[i][j]->idx]) > 1 || this->tracks[i].size() < 2) 
+            {
+                ite = this->tracks.erase(ite);
+                isErased = true;
+                break;
+            }
+        }
+        if(!isErased) 
+        {
+            i++;
+            ite++;
+        }
+    }
 }
