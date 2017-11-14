@@ -37,13 +37,13 @@ using namespace std;
 
 #define DELTA_UP 100
 #define CTHRESHOLD 0.7
-
-struct Camera
-{
-    Point2f center; // camera center
-    Mat R;          // rotation matrix
-    Mat t;          // translation matrix
-};
+#define uint unsigned int
+// struct Camera
+// {
+//     Point2f center; // camera center
+//     Mat R;          // rotation matrix
+//     Mat t;          // translation matrix
+// };
 
 
 struct CGEdge
@@ -55,7 +55,7 @@ struct CGEdge
 class CameraGraph
 {
 private:
-    vector<Camera> cameras;             
+    vector<uint> cameras;             
     vector< vector<CGEdge*> > edges;
     int count;
 
@@ -64,26 +64,14 @@ public:
     int getCount() const;
     void setCount(int c);
 
-    void insert(CameraGraphNode cgNode);
-    void remove(CameraGraphNode cgNode);
+    vector<uint> getCameras() const;
 
-    CameraGraphNode getSubset(int i) const;
+    void insert(uint c, CGEdge* edge);
 
-    bool getCCSubset(int i, CameraGraph& cg);
+    static bool getCCSubset(int i, vector<CameraGraph*> g, CameraGraph*& cg);
     // CameraGraphNode getNode(int idx) const;
 };
 
-struct CameraGraphNode
-{
-    Camera camera;
-    vector<CGEdge*> edge;
-
-    CameraGraphNode(Camera c, vector<CGEdge*> e)
-    {
-        camera = c;
-        edge = e;
-    }
-};
 
 #endif
 

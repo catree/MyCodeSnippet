@@ -1,4 +1,5 @@
 #include "CameraCluster.h"
+#include <queue>
 
 int CameraGraph::getCount() const
 {
@@ -10,124 +11,87 @@ void CameraGraph::setCount(int c)
     this->count = c;
 }
 
-// CameraGraphNode CameraGraph::getNode(int idx) const
-// {
-//     CameraGraphNode cgNode;
-//     cgNode.camera = this->cameras[idx];
-//     cgNode.edge = this->edges[idx];
 
-//     return cgNode;
-// }
-
-//--------------------------HOW TO DO ?-----------------------------
-CameraGraphNode CameraGraph::getSubset(int i) const
+void CameraGraph::insert(uint c, CGEdge* edge)
 {
-    CameraGraph cg;
-    return cg;
+    this->cameras.push_back(c);
+    //this->edges.push_back(edge);
 }
 
-void CameraGraph::insert(CameraGraphNode cgNode)
-{
-    this->cameras.push_back(cgNode.camera);
-    this->edges.push_back(cgNode.edge);
-}
 
-void CameraGraph::remove(CameraGraphNode cgNode)
-{
-    int i = 0;
-    vector<Camera>::iterator ite;
-    for(ite = this->cameras.begin(); ite != this->cameras.end();)
-    {
-        if(cameras[i] == cgNode.camera) 
-        {
-            ite = this->cameras.erase(ite);
-            break;
-        }
-        else 
-        {
-            i++;
-            ite++;
-        }
-    }
-
-    i = 0;
-    vector< vector<CGEdge*> >:: iterator eite;
-    for(eite = this->edges.begin(); eite != this->edges.end();)
-    {
-        if(edges[i] == cgNode.edge)
-        {
-            eite = this->edges.erase(eite);
-            break;
-        }
-        else
-        {
-            i++;
-            eite++;
-        }
-    }
-}
-
-void normalizedCut(CameraGraph g_i, CameraGraph& g_i1, CameraGraph& g_i2)
+void normalizedCut(CameraGraph g, CameraGraph*& g1, CameraGraph*& g2)
 {
     // Normalized Cut algorithm
 }
 
-void descendSort(vector<CGEdge>& e)
+void descendSort(vector<CGEdge*>& e)
 {
 
 }
 
-void cameraCluster(CameraGraph cg, CameraGraph& g_out)
+void cameraCluster(CameraGraph cg, vector<CameraGraph*>& g_out)
 {
-    CameraGraph g_in = cg;
-    while(g_in.getCount() != 0)
+    queue<CameraGraph*> g_in;
+    vector<CameraGraph*> g_size;
+
+    CameraGraph *subG1, *subG2;    
+    normalizedCut(cg, subG1, subG2);
+    g_in.push(subG1);
+    g_in.push(subG2);
+
+    while(!g_in.empty())
     {
         // Graph Division
-        CameraGraph g_size;
         
-        for(int i = 0; i < g_in.getCount(); i++)
+        while(!g_in.empty())
         {
-            CameraGraphNode tmp = g_in.getSubset(i);
-            g_size.insert(tmp);
-            g_in.remove(tmp);
+            // CameraGraphNode tmp = g_in.getSubset(i);
+            CameraGraph* tmp = g_in.front();
+            g_in.pop();
             
-            if(g_size.getCount() <= DELTA_UP) g_size.setCount(g_size.getCount() + 1);
+            if((*tmp).getCount() <= DELTA_UP) 
+                g_size.push_back(tmp);
             else
             {
-                CameraGraph g_i1, g_i2;
-                normalizedCut(g_size, g_i1, g_i2);
-                g_in.insert(g_i1);
-                g_in.insert(g_i2);
+                CameraGraph* g_i1, *g_i2;
+                normalizedCut(*tmp, g_i1, g_i2);
+                g_in.push(g_i1);
+                g_in.push(g_i2);
             }
         }
 
         // Graph Expansion
-        vector<CGEdge> e_dis;
+        vector<CGEdge*> e_dis;
         descendSort(e_dis);
 
         for(int k = 0; k < e_dis.size(); k++)
         {
             int i = k;
-            int j = e_dis[k].to;
-            CameraGraph g_vi, g_vj;
-            bool isSelectedi = g_size.getCCSubset(i, g_vi);
-            bool isSelectedj = g_size.getCCSubset(j, g_vj);
+            int j = e_dis[k]->to;
+            CameraGraph* g_vi, *g_vj;
+            bool isSelectedi = CameraGraph::getCCSubset(i, g_size, g_vi);
+            bool isSelectedj = CameraGraph::getCCSubset(j, g_size, g_vj);
 
             if(isSelectedi)
-                g_vi.insert(CamaraGraphNode(cg.cameras[j], e_dis[k]));
+                g_vi->insert(cg.getCameras()[j], e_dis[k]);
             if(isSelectedj)
-                g_vj.insert(CameraGraphNode(cg.cameras[i], e_dis[k]));
+                g_vj->insert(cg.getCameras()[i], e_dis[k]);
         }
             
         for(auto g : g_size)
         {
-            if(g.getCount() <= DELTA_UP) g_out.insert(g);
-            else g_in.insert(g);
+            if(g->getCount() <= DELTA_UP) g_out.push_back(g);
+            else g_in.push(g);
         }
     }
 }
 
-bool CameraGraph::getCCSubset(int i, CameraGraph& cg)
+bool CameraGraph::getCCSubset(int i, vector<CameraGraph*> g, CameraGraph*& cg)
 {
     return false;
+}
+
+vector<uint> CameraGraph::getCameras() const
+{
+    return this->cameras;
 }
