@@ -1,0 +1,3 @@
+/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/build/CMakeFiles/edit_cache.dir
+/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/build/CMakeFiles/rebuild_cache.dir
+/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/build/CMakeFiles/sift.dir
