@@ -23,6 +23,17 @@ public:
     }
 };
 
+// AUG狙击手
+class Snipper
+{
+public:
+    void KillEnemy(AUG* aug)
+    {
+        aug->ZoomOut();
+        aug->Shoot();
+    }
+};
+
 }
 
 #endif

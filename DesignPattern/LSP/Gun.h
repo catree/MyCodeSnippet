@@ -38,6 +38,20 @@ public:
     }
 };
 
+class AUG : public Rifle
+{
+public:
+    void ZoomOut()
+    {
+        std::cout << "Watching enemy...\n";
+    }
+
+    virtual void Shoot()
+    {
+        std::cout << "AUG Shooting...\n";
+    }
+};
+
 } // blufish
 
 
