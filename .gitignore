@@ -3,3 +3,4 @@ build/*
 */build/*
 src/*/build/*
 result/*
+DesignPattern/LSP/build
