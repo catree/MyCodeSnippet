@@ -1,3 +1,0 @@
-/home/chenyu/桌面/三维重建/code/3DReconstruction/SIFT+RANSAC/build/CMakeFiles/edit_cache.dir
-/home/chenyu/桌面/三维重建/code/3DReconstruction/SIFT+RANSAC/build/CMakeFiles/rebuild_cache.dir
-/home/chenyu/桌面/三维重建/code/3DReconstruction/SIFT+RANSAC/build/CMakeFiles/siftRansac.dir
