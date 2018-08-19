@@ -1,6 +1,0 @@
-/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/Feature/featureDetector/build/CMakeFiles/edit_cache.dir
-/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/Feature/featureDetector/build/CMakeFiles/rebuild_cache.dir
-/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/Feature/featureDetector/build/bin/CMakeFiles/rebuild_cache.dir
-/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/Feature/featureDetector/build/bin/CMakeFiles/edit_cache.dir
-/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/Feature/featureDetector/build/bin/CMakeFiles/testFeatureDetector.dir
-/home/chenyu/桌面/三维重建/code/3DReconstruction/MySIFT/Feature/featureDetector/build/bin/CMakeFiles/FeatureDetector.dir

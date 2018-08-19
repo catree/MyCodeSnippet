@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -std=c++11  -shared -Wl,-soname,libFeatureDetector.so -o libFeatureDetector.so CMakeFiles/FeatureDetector.dir/FeatureDetector.cpp.o  -L/usr/local/cuda/lib64 

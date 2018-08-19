@@ -1,6 +1,0 @@
-/home/chenyu/文档/SfM/src/tracks/build/CMakeFiles/rebuild_cache.dir
-/home/chenyu/文档/SfM/src/tracks/build/CMakeFiles/FeatureManager.dir
-/home/chenyu/文档/SfM/src/tracks/build/CMakeFiles/GMSMatcher.dir
-/home/chenyu/文档/SfM/src/tracks/build/CMakeFiles/ImagePair.dir
-/home/chenyu/文档/SfM/src/tracks/build/CMakeFiles/edit_cache.dir
-/home/chenyu/文档/SfM/src/tracks/build/CMakeFiles/te.dir
