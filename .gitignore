@@ -4,3 +4,5 @@ build/*
 src/*/build/*
 result/*
 DesignPattern/LSP/build
+C++Primer/*/build
+/*/*/build/*
