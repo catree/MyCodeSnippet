@@ -6,6 +6,8 @@
 #include "Eigen/Core"
 #include "Eigen/Dense"
 
+#include "Ransac.h"
+
 namespace sfm {
 namespace geometry {
     /**
@@ -18,21 +20,21 @@ namespace geometry {
      */
     bool BaseHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
                            const std::vector<Eigen::Vector3d>& points2,
-                           Matrix3d& homograpy);
+                           Eigen::Matrix3d& homography);
     
     bool NormalizedHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
                                  const std::vector<Eigen::Vector3d>& points2,
-                                 Matrix3d& homograpy);
+                                 Eigen::Matrix3d& homography);
     
     Eigen::Matrix3d FindConditionerFromPoints(const std::vector<Eigen::Vector3d>& points);
     
     double SingleImageError(const Eigen::Vector3d& point1,
                             const Eigen::Vector3d& point2,
-                            const Matrix3d& homograpy);
+                            const Eigen::Matrix3d& homography);
 
     double SymmetryTransferError(const Eigen::Vector3d& point1,
                                  const Eigen::Vector3d& point2,
-                                 const Matrix3d& homography);
+                                 const Eigen::Matrix3d& homography);
 }   // namespace geometry
 }   // namespace sfm
 

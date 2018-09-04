@@ -1,9 +1,9 @@
+#include <algorithm>
+
 #include "Homography.h" 
 
 #include "Eigen/Core"
 #include "Eigen/Dense"
-
-#include "Ransac.h"
 
 namespace sfm {
 namespace geometry {
@@ -13,13 +13,13 @@ bool BaseHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
                        Eigen::Matrix3d& homography)
 {
     if (points1.size() < 4 || points2.size() < 4) {
-        std::cerr << "size of correspondences less than 4," 
-        std::cerr << "cannot estimate a homography\n"
+        std::cerr << "size of correspondences less than 4,"; 
+        std::cerr << "cannot estimate a homography\n";
         return false;
     }
 
     int size = points1.size();
-    Eigen::MatrixXd A = Eigen::MatrixXd::Zeros(3 * size, 9);
+    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(3 * size, 9);
 
     for (int i = 0; i < size; i++) {
         double x1 = points1[i][0], y1 = points1[i][1], w1 = points1[i][2];
@@ -39,21 +39,21 @@ bool BaseHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
     Eigen::MatrixXd V = svd_a.matrixV();
     // homograpy is the last column of V
     for (int i = 0; i < 3; i++) {
-        homography(i, 0) = V(i * 3 + 0, 8); 
-        homography(i, 1) = V(i * 3 + 1, 8);
-        homography(i, 2) = V(i * 3 + 2, 8);
+        homography(i, 0) = V(i * 3 + 0, 8) / V(8, 8); 
+        homography(i, 1) = V(i * 3 + 1, 8) / V(8, 8);
+        homography(i, 2) = V(i * 3 + 2, 8) / V(8, 8);
     }
-
+    // homography = (1.0 / homography[8]) * homography;
     return true;
 }
 
 bool NormalizedHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
                              const std::vector<Eigen::Vector3d>& points2,
-                             Matrix3d& homograpy)
+                             Eigen::Matrix3d& homography)
 {
     if (points1.size() < 4 || points2.size() < 4) {
-        std::cerr << "size of correspondences less than 4," 
-        std::cerr << "cannot estimate a homography\n"
+        std::cerr << "size of correspondences less than 4,";
+        std::cerr << "cannot estimate a homography\n";
         return false;
     }
 
@@ -66,9 +66,10 @@ bool NormalizedHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
         points2_hat.push_back(T2 * points2[i]);
     }
 
-    Eigen::Matrix3d H = Eigen::Matrix3d::Zeros();
+    Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
     BaseHomographyDLT(points1_hat, points2_hat, H);
     homography = T2.inverse() * H * T1;
+    // homography = homography / homography[8];
 
     return true;
 }
@@ -80,26 +81,27 @@ Eigen::Matrix3d FindConditionerFromPoints(const std::vector<Eigen::Vector3d>& po
 
 double SingleImageError(const Eigen::Vector3d& point1,
                         const Eigen::Vector3d& point2,
-                        const Matrix3d& homography)
+                        const Eigen::Matrix3d& homography)
 {
     double err = 0.0;
 
-    point2_hat = homography * point1;
+    Eigen::Vector3d point2_hat = homography * point1;
     err += (point2_hat - point2).norm();
     return err;
 }
 
 double SymmetryTransferError(const Eigen::Vector3d& point1,
                              const Eigen::Vector3d& point2,
-                             const Matrix3d& homography)
+                             const Eigen::Matrix3d& homography)
 {
     double err = 0.0;
     err += SingleImageError(point1, point2, homography);
 
-    Matrix3d inv_homography = homography.inverse();
+    Eigen::Matrix3d inv_homography = homography.inverse();
     err += SingleImageError(point2, point1, inv_homography);
     return err;
 }
+
 
 }   // namespace geometry
 }   // namespace sfm

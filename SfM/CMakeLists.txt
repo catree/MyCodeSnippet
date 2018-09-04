@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 
 project(SfM)
 
@@ -10,4 +10,8 @@ find_package(Ceres REQUIRED)
 include_directories(${CERES_INCLUDE_DIRS})
 include_directories("/usr/include/eigen3")
 
-add_subdirectory(src)
+include_directories(${PROJECT_SOURCE_DIR}/src)
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+# add_subdirectory(${PROJECT_SOURCE_DIR}/test)
+add_subdirectory(${PROJECT_SOURCE_DIR}/ext)
