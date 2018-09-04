@@ -47,11 +47,58 @@ bool BaseHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
     return true;
 }
 
-bool RansacHomography(const std::vector<Eigen::Vector3d>& points1,
-                      const std::vector<Eigen::Vector3d>& points2,
-                      Matrix3d& homograpy)
+bool NormalizedHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
+                             const std::vector<Eigen::Vector3d>& points2,
+                             Matrix3d& homograpy)
 {
+    if (points1.size() < 4 || points2.size() < 4) {
+        std::cerr << "size of correspondences less than 4," 
+        std::cerr << "cannot estimate a homography\n"
+        return false;
+    }
 
+    Eigen::Matrix3d T1 = FindConditionerFromPoints(points1);
+    Eigen::Matrix3d T2 = FindConditionerFromPoints(points2);
+
+    std::vector<Eigen::Vector3d> points1_hat, points2_hat;
+    for (int i = 0; i < points1.size(); i++) {
+        points1_hat.push_back(T1 * points1[i]);
+        points2_hat.push_back(T2 * points2[i]);
+    }
+
+    Eigen::Matrix3d H = Eigen::Matrix3d::Zeros();
+    BaseHomographyDLT(points1_hat, points2_hat, H);
+    homography = T2.inverse() * H * T1;
+
+    return true;
+}
+
+Eigen::Matrix3d FindConditionerFromPoints(const std::vector<Eigen::Vector3d>& points)
+{
+    // TODO
+}
+
+double SingleImageError(const Eigen::Vector3d& point1,
+                        const Eigen::Vector3d& point2,
+                        const Matrix3d& homography)
+{
+    double err = 0.0;
+
+    point2_hat = homography * point1;
+    err += (point2_hat - point2).norm();
+    return err;
+}
+
+double SymmetryTransferError(const Eigen::Vector3d& point1,
+                             const Eigen::Vector3d& point2,
+                             const Matrix3d& homography)
+{
+    double err = 0.0;
+    err += SingleImageError(point1, point2, homography);
+
+    Matrix3d inv_homography = homography.inverse();
+    err += SingleImageError(point2, point1, inv_homography);
+    return err;
 }
 
 }   // namespace geometry
