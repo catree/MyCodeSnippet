@@ -2,6 +2,8 @@
 #include <random>
 #include <algorithm>
 
+#include "ceres/ceres.h"
+
 #include "RansacHomography.h"
 #include "Ransac.h"
 #include "Homography.h"
@@ -64,6 +66,39 @@ bool RansacHomography(std::vector<Eigen::Vector3d>& points1,
         N = GetSampleCount(o, s, p);
         sample_count++;
     }
+    return true;
+}
+
+bool LMHomography(const std::vector<Eigen::Vector3d>& points1,
+                  const std::vector<Eigen::Vector3d>& points2,
+                  Eigen::Matrix3d& homography)
+{
+    NormalizedHomographyDLT(points1, points2, homography);
+    vector<double> h(9);
+    h[0] = homography(0, 0); h[1] = homography(0, 1); h[2] = homography(0, 2);
+    h[3] = homography(1, 0); h[4] = homography(1, 1); h[5] = homography(1, 2);
+    h[6] = homography(2, 0); h[7] = homography(2, 1); h[8] = homography(2, 2);
+
+    ceres::Problem problem;
+    for (int i = 0; i < points1.size(); i++) {
+        ceres::CostFunction* cost_function = 
+            SingleImageCostFunction::Create(points1[i], points2[i]);
+        problem.AddResidualBlock(cost_function, new ceres::HuberLoss(), h);
+    }
+
+    ceres::Solver::Options options;
+    options.linear_solver_type = ceres::DENSE_SCHUR;
+    options.minimizer_progress_to_stdout = true;
+    // options.num_threads = 
+
+    ceres::Solver::Summary summary;
+    ceres::Solve(options, &problem, &summary);
+    std::cout << summary.FullReport() << std::endl;
+
+    homography(0, 0) = h[0]; homography(0, 1) = h[1]; homography(0, 2) = h[2];
+    homography(1, 0) = h[3]; homography(1, 1) = h[4]; homography(1, 2) = h[5];
+    homography(2, 0) = h[6]; homography(2, 1) = h[7]; homography(2, 2) = h[8];
+    
     return true;
 }
 

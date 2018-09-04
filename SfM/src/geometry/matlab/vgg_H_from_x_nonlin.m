@@ -2,7 +2,7 @@ function [H,rms] = vgg_H_from_x_nonlin(H_initial,p1,p2)
 
 % [H,rms] = vgg_H_from_x_nonlin(H_initial,xs1,xs2)
 %
-% Compute H using non-linear method which minimizes Sampson's approx to
+% Compute H using non-linear method which minimizes Sampsons approx to
 % geometric reprojection error (see Hartley & Zisserman Alg 3.3 page 98 in
 %                              1st edition, Alg 4.3 page 114 in 2nd edition). 
 
