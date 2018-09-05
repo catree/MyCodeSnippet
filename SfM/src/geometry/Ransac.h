@@ -6,7 +6,7 @@
 namespace sfm {
 namespace geometry {
     /**
-     * @brief  
+     * @brief  Compute the sample count
      * @note   
      * @param  o: the probability of outliers
      * @param  s: the size of point set that we need to sample 
@@ -14,7 +14,7 @@ namespace geometry {
      * each time, there is no outlier at least once
      * @retval The count we need to sample
      */
-    int GetSampleCount(double o, int s, double p = 0.99);
+    size_t GetSampleCount(double o, int s, double p = 0.99);
 
 }   // namespace geometry
 }   // namespace sfm

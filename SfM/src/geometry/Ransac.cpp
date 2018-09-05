@@ -6,10 +6,10 @@
 namespace sfm {
 namespace geometry {
 
-int GetSampleCount(double o, int s, double p)
+size_t GetSampleCount(double o, int s, double p)
 {   
     // according to "Multiple view geometry in computer vision"
-    return (int) (log(1.0 - p) / log(1.0 - pow(1.0 - o, s)));
+    return (size_t) (log(1.0 - p) / log(1.0 - pow(1.0 - o, s)));
 }
 
 }   // namespace geometry

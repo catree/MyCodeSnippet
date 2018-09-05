@@ -13,29 +13,32 @@ namespace geometry {
 
 bool RansacHomography(const std::vector<Eigen::Vector3d>& points1,
                       const std::vector<Eigen::Vector3d>& points2,
-                      std::vector<Eigen::Vector3d>& inliers1,
-                      std::vector<Eigen::Vector3d>& inliers2,
+                      std::vector<Eigen::Vector3d>& inlier_set1,
+                      std::vector<Eigen::Vector3d>& inlier_set2,
                       Eigen::Matrix3d& homography,
                       const double p,
                       const double t)
 {
-    int N = 0x7fffffff;
+    size_t N = 10000;
     int sample_count = 0;
-    int s = 4;
+    int s = 5;
     int size = points1.size();
     int inlier_num = 0;
+    
     
     vector<int> indeces;
     for (int i = 0; i < size; i++) { indeces.push_back(i); }
 
     srand((unsigned)time(NULL));
     while (N > sample_count) {
+        std::vector<Eigen::Vector3d> inliers1, inliers2;
         random_shuffle(indeces.begin(), indeces.end());
         vector<Eigen::Vector3d> sample_points1, sample_points2;
         for (int i = 0; i < s; i++) {
             int index = indeces[i];
             sample_points1.push_back(points1[index]);
             sample_points2.push_back(points2[index]);
+            // std::cout << "index: " << index << std::endl;
         }
 
         Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
@@ -46,10 +49,12 @@ bool RansacHomography(const std::vector<Eigen::Vector3d>& points1,
         if (!BaseHomographyDLT(sample_points1, sample_points2, H)) {
             return false;
         }
-        
+        std::cout << "H: \n" << H << std::endl;
         // Compute inliers
         for (int i = 0; i < size; i++) {
-            double dis = SymmetryTransferError(points1[i], points2[i], H);
+            // double dis = SymmetryTransferError(points1[i], points2[i], H);
+            double dis = SingleImageError(points1[i], points2[i], H);
+            // std::cout << "error: " << dis << std::endl;
             if (dis <= t) {
                 inliers1.push_back(points1[i]);
                 inliers2.push_back(points2[i]);
@@ -58,6 +63,8 @@ bool RansacHomography(const std::vector<Eigen::Vector3d>& points1,
 
         if (inlier_num < inliers1.size()) {
             inlier_num = inliers1.size();
+            inliers1.swap(inlier_set1);
+            inliers2.swap(inlier_set2);
             homography = H;
         }
         else if (inlier_num == inliers1.size()) {
@@ -66,6 +73,9 @@ bool RansacHomography(const std::vector<Eigen::Vector3d>& points1,
 
         double o = 1.0 - (double)inlier_num / (double)size;
         N = GetSampleCount(o, s, p);
+        std::cout << "inlier_num: " << inlier_num << std::endl;
+        std::cout << "outlier ratio: " << o << std::endl;
+        std::cout << "Updated(N): " << N << "\n";
         sample_count++;
     }
     return true;
