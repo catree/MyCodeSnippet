@@ -6,6 +6,7 @@
 #include "Eigen/Core"
 #include "Eigen/Dense"
 
+#include "Homography.h"
 #include "RansacHomography.h"
 
 using namespace sfm;
@@ -45,7 +46,9 @@ void TEST()
     std::vector<Eigen::Vector3d> inliers1, inliers2;
     Eigen::Matrix3d estimated_h = Eigen::Matrix3d::Zero();
 
-    RansacHomography(points1, points2, inliers1, inliers2, estimated_h, 0.99, 0.005);
+    BaseHomographyDLT(points1, points2, estimated_h);
+
+    // RansacHomography(points1, points2, inliers1, inliers2, estimated_h, 0.99, 0.005);
 
     std::cout << "Inliers size is: " << inliers1.size() << std::endl;
     std::cout << "Estimated Homography is: " << estimated_h << std::endl;
