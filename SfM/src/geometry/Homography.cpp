@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "Homography.h" 
+#include "Tools.h"
 
 #include "Eigen/Core"
 #include "Eigen/Dense"
@@ -70,6 +71,7 @@ bool NormalizedHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
     BaseHomographyDLT(points1_hat, points2_hat, H);
     homography = T2.inverse() * H * T1;
     // homography = homography / homography[8];
+    homography /= homography[8];
 
     return true;
 }
@@ -77,6 +79,10 @@ bool NormalizedHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
 Eigen::Matrix3d FindConditionerFromPoints(const std::vector<Eigen::Vector3d>& points)
 {
     // TODO
+    std::vector<Eigen::Vector3d> nonh_points;
+    for (Eigen::Vector3d point : points) {
+        nonh_points.push_back(Homoge2NonHomoge(point));
+    }
 }
 
 double SingleImageError(const Eigen::Vector3d& point1,
