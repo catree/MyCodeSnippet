@@ -20,12 +20,16 @@ file(GLOB UNIT_TEST_FILE *_test.cpp)
 list(REMOVE_ITEM SFM_GEOMETRY_CPP ${UNIT_TEST_FILE})
 
 add_library(sfm_geometry 
-            SHARED
+            # SHARED
             ${SFM_GEOMETRY_HEADER} 
             ${SFM_GEOMETRY_CPP})
-target_link_libraries(sfm_geometry ${CERES_LIBRARIES})
+target_link_libraries(sfm_geometry 
+                      sfm_math
+                      ${CERES_LIBRARIES}
+                      )
 
 add_executable(RansacHomography_test RansacHomography_test.cpp)
 
 target_link_libraries(RansacHomography_test 
-                      sfm_geometry)
+                      sfm_geometry
+                      )

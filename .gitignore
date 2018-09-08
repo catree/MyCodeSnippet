@@ -6,3 +6,5 @@ result/*
 DesignPattern/LSP/build
 C++Primer/*/build
 /*/*/build/*
+*/bin
+*/lib

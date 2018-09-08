@@ -1,7 +1,7 @@
 #include <algorithm>
 
 #include "Homography.h" 
-#include "Tools.h"
+#include "math/Common.h"
 
 #include "Eigen/Core"
 #include "Eigen/Dense"
@@ -70,19 +70,47 @@ bool NormalizedHomographyDLT(const std::vector<Eigen::Vector3d>& points1,
     Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
     BaseHomographyDLT(points1_hat, points2_hat, H);
     homography = T2.inverse() * H * T1;
-    // homography = homography / homography[8];
-    homography /= homography[8];
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            homography(i, j) = homography(i, j) / homography(2, 2);
+        }
+    }
 
     return true;
 }
 
 Eigen::Matrix3d FindConditionerFromPoints(const std::vector<Eigen::Vector3d>& points)
 {
-    // TODO
-    std::vector<Eigen::Vector3d> nonh_points;
+    std::vector<Eigen::VectorXd> nonh_points;
     for (Eigen::Vector3d point : points) {
-        nonh_points.push_back(Homoge2NonHomoge(point));
+        nonh_points.push_back(math::Homoge2NonHomoge(point));
     }
+
+    std::vector<double> vec_x(nonh_points.size());
+    std::vector<double> vec_y(nonh_points.size());
+    for (int i = 0; i < nonh_points.size(); i++) {
+        vec_x[i] = nonh_points[i][0];
+        vec_y[i] = nonh_points[i][1];
+    }
+ 
+    Eigen::Vector2d mean_vec;
+    mean_vec[0] = sfm::math::Mean(vec_x); 
+    mean_vec[1] = sfm::math::Mean(vec_y);
+
+    Eigen::Matrix<double, 1, 2> std_row_vec;
+    double std_x = sfm::math::StdDeviation(vec_x);
+    double std_y = sfm::math::StdDeviation(vec_y);
+    std_row_vec(0, 0) = std_x + (std_x == 0);
+    std_row_vec(0, 1) = std_y + (std_y == 0);
+
+    Eigen::Matrix3d sim = Eigen::Matrix3d::Zero();
+    sim(0, 0) = sqrt(2) / std_row_vec(0, 0);
+    sim(1, 1) = sqrt(2) / std_row_vec(0, 1);
+    sim(0, 2) = -sqrt(2) * mean_vec[0] / std_row_vec(0, 0);
+    sim(1, 2) = -sqrt(2) * mean_vec[1] / std_row_vec(0, 1);
+    sim(2, 2) = 1.0;
+
+    return sim;
 }
 
 double SingleImageError(const Eigen::Vector3d& point1,
@@ -90,12 +118,9 @@ double SingleImageError(const Eigen::Vector3d& point1,
                         const Eigen::Matrix3d& homography)
 {
     double err = 0.0;
-
-    Eigen::Vector3d point2_hat = homography * point1;
+    Eigen::Vector3d point2_hat = math::Normalization(homography * point1);
     err += (point2_hat - point2).norm();
-    // std::cout << "\npoint1: \n" << point1 << std::endl;
-    // std::cout << "\npoint2: \n" << point2 << std::endl;
-    // std::cout << "\npoint2_hat: \n" << point2_hat << std::endl;
+
     return err;
 }
 
@@ -105,10 +130,10 @@ double SymmetryTransferError(const Eigen::Vector3d& point1,
 {
     double err = 0.0;
     err += SingleImageError(point1, point2, homography);
-
     Eigen::Matrix3d inv_homography = homography.inverse();
     err += SingleImageError(point2, point1, inv_homography);
-    return err;
+
+    return 0.5 * err;
 }
 
 

@@ -5,16 +5,17 @@
 #include "ceres/ceres.h"
 
 #include "RansacHomography.h"
+#include "math/Common.h"
 
 using namespace std;
 
 namespace sfm {
 namespace geometry {
 
-bool RansacHomography(const std::vector<Eigen::Vector3d>& points1,
-                      const std::vector<Eigen::Vector3d>& points2,
-                      std::vector<Eigen::Vector3d>& inlier_set1,
-                      std::vector<Eigen::Vector3d>& inlier_set2,
+bool RansacHomography(const std::vector<Eigen::Vector2d>& points1,
+                      const std::vector<Eigen::Vector2d>& points2,
+                      std::vector<Eigen::Vector2d>& inlier_set1,
+                      std::vector<Eigen::Vector2d>& inlier_set2,
                       Eigen::Matrix3d& homography,
                       const double p,
                       const double t)
@@ -25,37 +26,40 @@ bool RansacHomography(const std::vector<Eigen::Vector3d>& points1,
     int size = points1.size();
     int inlier_num = 0;
     
-    
     vector<int> indeces;
     for (int i = 0; i < size; i++) { indeces.push_back(i); }
 
     srand((unsigned)time(NULL));
     while (N > sample_count) {
-        std::vector<Eigen::Vector3d> inliers1, inliers2;
+        std::vector<Eigen::Vector2d> inliers1, inliers2;
         random_shuffle(indeces.begin(), indeces.end());
         vector<Eigen::Vector3d> sample_points1, sample_points2;
         for (int i = 0; i < s; i++) {
             int index = indeces[i];
-            sample_points1.push_back(points1[index]);
-            sample_points2.push_back(points2[index]);
-            // std::cout << "index: " << index << std::endl;
+            Eigen::Vector3d homo_point1 = math::Nonhomoge2Homoge(points1[index]);
+            Eigen::Vector3d homo_point2 = math::Nonhomoge2Homoge(points2[index]);
+            sample_points1.push_back(homo_point1);
+            sample_points2.push_back(homo_point2);
+            std::cout << "index: " << index << std::endl;
         }
 
         Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
-        // TODO
-        // if (!NormalizedHomographyDLT(sample_points1, sample_points2, H)) {
-        //     return false;
-        // }
-        if (!BaseHomographyDLT(sample_points1, sample_points2, H)) {
+        
+        if (!NormalizedHomographyDLT(sample_points1, sample_points2, H)) {
             return false;
         }
+        // if (!BaseHomographyDLT(sample_points1, sample_points2, H)) {
+        //     return false;
+        // }
         std::cout << "H: \n" << H << std::endl;
         // Compute inliers
         for (int i = 0; i < size; i++) {
-            // double dis = SymmetryTransferError(points1[i], points2[i], H);
-            double dis = SingleImageError(points1[i], points2[i], H);
+            Eigen::Vector3d homo_point1 = math::Nonhomoge2Homoge(points1[i]);
+            Eigen::Vector3d homo_point2 = math::Nonhomoge2Homoge(points2[i]);
+            double dis = SingleImageError(homo_point1, homo_point2, H);
+            // double dis = SymmetryTransferError(homo_point1, homo_point2, H);
             // std::cout << "error: " << dis << std::endl;
-            if (dis <= t) {
+            if (dis <= pow(t, 2)) {
                 inliers1.push_back(points1[i]);
                 inliers2.push_back(points2[i]);
             }
