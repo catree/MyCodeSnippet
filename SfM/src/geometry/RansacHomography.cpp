@@ -40,7 +40,6 @@ bool RansacHomography(const std::vector<Eigen::Vector2d>& points1,
             Eigen::Vector3d homo_point2 = math::Nonhomoge2Homoge(points2[index]);
             sample_points1.push_back(homo_point1);
             sample_points2.push_back(homo_point2);
-            std::cout << "index: " << index << std::endl;
         }
 
         Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
@@ -85,41 +84,42 @@ bool RansacHomography(const std::vector<Eigen::Vector2d>& points1,
     return true;
 }
 
-// bool LMHomography(const std::vector<Eigen::Vector3d>& points1,
-//                   const std::vector<Eigen::Vector3d>& points2,
-//                   Eigen::Matrix3d& homography)
-// {
-//     // TODO
-//     // NormalizedHomographyDLT(points1, points2, homography);
-//     BaseHomographyDLT(points1, points2, homography);
-//     std::vector<double> h(9);
-//     h[0] = homography(0, 0); h[1] = homography(0, 1); h[2] = homography(0, 2);
-//     h[3] = homography(1, 0); h[4] = homography(1, 1); h[5] = homography(1, 2);
-//     h[6] = homography(2, 0); h[7] = homography(2, 1); h[8] = homography(2, 2);
+bool LMHomography(const std::vector<Eigen::Vector2d>& points1,
+                  const std::vector<Eigen::Vector2d>& points2,
+                  Eigen::Matrix3d& homography)
+{
+    double *h = new double [9];
+    h[0] = homography(0, 0); h[1] = homography(0, 1); h[2] = homography(0, 2);
+    h[3] = homography(1, 0); h[4] = homography(1, 1); h[5] = homography(1, 2);
+    h[6] = homography(2, 0); h[7] = homography(2, 1); h[8] = homography(2, 2);
 
-//     ceres::Problem problem;
-//     for (int i = 0; i < points1.size(); i++) {
-//         ceres::CostFunction* cost_function = 
-//             SingleImageCostFunction::Create(points1[i], points2[i]);
-//         ceres::LossFunction* loss_function = NULL;
-//         problem.AddResidualBlock(cost_function, loss_function, h);
-//     }
+    ceres::Problem problem;
+    for (int i = 0; i < points1.size(); i++) {
+        ceres::CostFunction* cost_function = 
+            SingleImageCostFunction::Create(points1[i], points2[i]);
+        ceres::LossFunction* loss_function = NULL;
+        problem.AddResidualBlock(cost_function, loss_function, h);
+    }
 
-//     ceres::Solver::Options options;
-//     options.linear_solver_type = ceres::DENSE_SCHUR;
-//     options.minimizer_progress_to_stdout = true;
-//     // options.num_threads = 
+    ceres::Solver::Options options;
+    options.linear_solver_type = ceres::DENSE_SCHUR;
+    options.minimizer_progress_to_stdout = true;
+    // options.num_threads = 
 
-//     ceres::Solver::Summary summary;
-//     ceres::Solve(options, &problem, &summary);
-//     std::cout << summary.FullReport() << std::endl;
+    ceres::Solver::Summary summary;
+    ceres::Solve(options, &problem, &summary);
+    std::cout << summary.BriefReport() << std::endl;
+    // std::cout << summary.FullReport() << std::endl;
 
-//     homography(0, 0) = h[0]; homography(0, 1) = h[1]; homography(0, 2) = h[2];
-//     homography(1, 0) = h[3]; homography(1, 1) = h[4]; homography(1, 2) = h[5];
-//     homography(2, 0) = h[6]; homography(2, 1) = h[7]; homography(2, 2) = h[8];
+    homography(0, 0) = h[0] / h[8]; homography(0, 1) = h[1] / h[8]; homography(0, 2) = h[2] / h[8];
+    homography(1, 0) = h[3] / h[8]; homography(1, 1) = h[4] / h[8]; homography(1, 2) = h[5] / h[8];
+    homography(2, 0) = h[6] / h[8]; homography(2, 1) = h[7] / h[8]; homography(2, 2) = h[8] / h[8];
+
+    std::cout << homography << std::endl;
     
-//     return true;
-// }
+    delete [] h;
+    return true;
+}
 
 }   // namespace geometry
 }   // namespace sfm

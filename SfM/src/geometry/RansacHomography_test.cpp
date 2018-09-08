@@ -79,6 +79,9 @@ void TEST1()
 
     std::cout << "Inliers size is: " << inliers1.size() << std::endl;
     std::cout << "Estimated Homography is: \n" << estimated_h << "\n\n";
+
+    std::cout << "Nonlier optimization of homography:\n";
+    LMHomography(inliers1, inliers2, H);
 }
 
 void TEST2()
@@ -135,7 +138,7 @@ void TEST4()
 int main(int argc, char** argv)
 {
     TEST1();
-    TEST2();
-    TEST3();
-    TEST4();
+    // TEST2();
+    // TEST3();
+    // TEST4();
 }
