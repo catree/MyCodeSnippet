@@ -36,7 +36,7 @@ namespace geometry {
         bool operator()(const T* const h, T* residuals) const
         {
             Eigen::Vector3d homo_point1_hat;
-            T p2_x = h[0] * (T)_point1[0] + h[2] * (T)_point1[1] + h[3];
+            T p2_x = h[0] * (T)_point1[0] + h[1] * (T)_point1[1] + h[2];
             T p2_y = h[3] * (T)_point1[0] + h[4] * (T)_point1[1] + h[5];
             T p2_w = h[6] * (T)_point1[0] + h[7] * (T)_point1[1] + h[8];
             p2_x /= p2_w;

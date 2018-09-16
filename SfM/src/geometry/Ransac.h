@@ -3,6 +3,10 @@
 
 #include <iostream>
 
+#include "Eigen/Core"
+#include "Eigen/Dense"
+#include "math/Common.h"
+
 namespace sfm {
 namespace geometry {
     /**
@@ -15,6 +19,8 @@ namespace geometry {
      * @retval The count we need to sample
      */
     size_t GetSampleCount(double o, int s, double p = 0.99);
+
+    Eigen::Matrix3d FindConditionerFromPoints(const std::vector<Eigen::Vector3d>& points);
 
 }   // namespace geometry
 }   // namespace sfm
