@@ -11,9 +11,13 @@
 namespace sfm {
 namespace geometry {
     
-    void BaseFundamental(const std::vector<Eigen::Vector3d>& points1,
+    bool BaseFundamental(const std::vector<Eigen::Vector3d>& points1,
                          const std::vector<Eigen::Vector3d>& points2,
                          Eigen::Matrix3d& fundamental);
+
+    bool NormalizedFundamental(const std::vector<Eigen::Vector3d>& points1,
+                               const std::vector<Eigen::Vector3d>& points2,
+                               Eigen::Matrix3d& fundamental);
     
 }   // namespace geometry
 }   // namespace sfm
