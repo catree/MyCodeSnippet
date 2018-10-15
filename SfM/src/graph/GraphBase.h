@@ -82,12 +82,14 @@ public:
     virtual bool AddNode(size_t idx, std::string name) = 0;
     virtual bool AddNode(const Node& node) = 0;
     virtual bool RemoveNode(size_t idx) = 0;
+    virtual bool HasNode(size_t idx) const = 0;
 
     // Edge operation
     virtual bool AddEdge(size_t src, size_t dst) = 0;
     virtual bool AddEdge(size_t src, size_t dst, double w) = 0;
     virtual bool AddEdge(const Edge& edge) = 0;
     virtual bool RemoveEdge(size_t src, size_t dst) = 0;
+    virtual bool HasEdge(size_t src, size_t dst) const = 0;
 
     // minimum spanning tree algorithm
     virtual std::vector<Edge> Prim() const = 0;
@@ -103,6 +105,7 @@ private:
 public:
     // constructor
     LocalGraph();
+    LocalGraph(size_t size);
     LocalGraph(const std::vector<Node>& nodes, const std::vector<EdgeMap>& edgeList);
     LocalGraph(const LocalGraph& localGraph);
 
@@ -116,14 +119,16 @@ public:
     virtual bool AddNode(size_t idx, std::string name);
     virtual bool AddNode(const Node& node);
     virtual bool RemoveNode(size_t idx);
+    virtual bool HasNode(size_t idx) const;
 
     // Edge operation
     std::vector<EdgeMap> GetEdgeList() const { return _edge_list; }
     Edge GetEdge(size_t src, size_t dst) const;
     virtual bool AddEdge(size_t src, size_t dst);
-    virtual bool AddEdge(size_t src, size_t dst, double w);
+    virtual bool AddEdge(size_t src, size_t dst, double w = 1.0);
     virtual bool AddEdge(const Edge& edge);
     virtual bool RemoveEdge(size_t src, size_t dst);
+    virtual bool HasEdge(size_t src, size_t dst) const;
 
     // minimum spanning tree algorithm
     virtual std::vector<Edge> Prim() const;
