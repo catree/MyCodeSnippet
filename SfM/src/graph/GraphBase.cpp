@@ -1,4 +1,7 @@
+#include <queue>
+
 #include "GraphBase.h"
+#include "UnionFind.h"
 
 namespace sfm {
 namespace graph {
@@ -16,12 +19,12 @@ LocalGraph::LocalGraph(size_t size)
 
 LocalGraph::LocalGraph(const std::vector<Node>& nodes, const std::vector<EdgeMap>& edgeList)
 {
-
+    // TODO:
 }
 
 LocalGraph::LocalGraph(const LocalGraph& localGraph)
 {
-
+    // TODO:
 }
 
 LocalGraph::~LocalGraph()
@@ -101,6 +104,53 @@ bool LocalGraph::RemoveEdge(size_t src, size_t dst)
     for (auto it = em.begin(); it != em.end(); ) {
         if (it->first == dst) it = em.erase(it);
         else ++it;
+    }
+}
+
+bool LocalGraph::HasEdge(size_t src, size_t dst) const
+{
+    return _edge_list[src].find(dst) == _edge_list[src].end();
+}
+
+std::vector<Edge> LocalGraph::Prim() const
+{
+
+}
+
+std::vector<Edge> LocalGraph::Kruskal() const
+{
+    std::vector<Edge> ans;
+    std::priority_queue<Edge> edges;
+
+    for (const EdgeMap& em : _edge_list) {
+        for (EdgeMap::const_iterator it = em.begin(); it != em.end(); ++it) {
+            edges.push(it->second);
+        }
+    }
+
+    UnionFind uf(_nodes.size());
+    while (!edges.empty()) {
+        Edge e = edges.top(); edges.pop();
+        if (uf.FindRoot(e.src) != uf.FindRoot(e.dst)) {
+            uf.Union(e.src, e.dst);
+            ans.push_back(e);
+            std::cout << "MST Edge: " << e.src << ", " << e.dst << "\n";
+        }
+    }
+}
+
+void LocalGraph::ShowInfo() const
+{
+    std::cout << "Graph Info: \n";
+    std::cout << "Node size: " << _nodes.size() << std::endl;
+    for (auto node : _nodes) std::cout << node.idx << std::endl;
+    std::cout << "Edge size: ";
+    for (const EdgeMap& em : _edge_list) {
+        for (EdgeMap::const_iterator it = em.begin(); it != em.end(); ++it) {
+            std::cout << it->second.src << "->" 
+                      << it->second.dst << ": " 
+                      << it->second.weight << std::endl;
+        }
     }
 }
 

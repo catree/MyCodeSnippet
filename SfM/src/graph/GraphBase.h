@@ -15,7 +15,10 @@ struct Node
     size_t idx;
     std::string filename;
 
+
     // constructor
+    Node() { }
+
     Node(size_t i, std::string name = "")
     {
         idx = i;
@@ -68,6 +71,11 @@ struct Edge
         }
         return false;
     }
+
+    friend bool operator < (const Edge& edge1, const Edge& edge2)
+    {
+        return edge1.weight > edge2.weight;
+    }
 };
 
 typedef std::unordered_map<size_t, Edge> EdgeMap;
@@ -94,6 +102,9 @@ public:
     // minimum spanning tree algorithm
     virtual std::vector<Edge> Prim() const = 0;
     virtual std::vector<Edge> Kruskal() const = 0;
+
+    // tool function
+    virtual void ShowInfo() const = 0;
 };
 
 class LocalGraph : GraphBase
@@ -134,44 +145,8 @@ public:
     virtual std::vector<Edge> Prim() const;
     virtual std::vector<Edge> Kruskal() const;
 
-};
+    virtual void ShowInfo() const;
 
-
-class GlobalGraph : GraphBase 
-{
-private:
-    std::unordered_map<IdPair, Node> _nodes;
-    std::vector<EdgeMap> _edge_list;
-
-public:
-    // constructor
-    GlobalGraph();
-    GlobalGraph(const std::unordered_map<IdPair, Node>& nodes, const std::vector<EdgeMap>& edgeList);
-    GlobalGraph(const GlobalGraph& globalGraph);
-
-    // destructor
-    ~GlobalGraph();
-
-    // Node operation
-    std::unordered_map<IdPair, Node> GetNodes() const { return _nodes; }
-    Node GetNode(size_t idx, IdType idType) const;
-    virtual bool AddNode(size_t idx);
-    virtual bool AddNode(size_t idx, std::string name);
-    virtual bool AddNode(const Node& node);
-    virtual bool RemoveNode(size_t idx);
-
-
-    // Edge operation
-    std::vector<EdgeMap> GetEdgeList() const { return _edge_list; }
-    Edge GetEdge(size_t src, size_t dst) const;
-    virtual bool AddEdge(size_t src, size_t dst);
-    virtual bool AddEdge(size_t src, size_t dst, double w);
-    virtual bool AddEdge(const Edge& edge);
-    virtual bool RemoveEdge(size_t src, size_t dst);
-
-    // minimum spanning tree algorithm
-    virtual std::vector<Edge> Prim() const;
-    virtual std::vector<Edge> Kruskal() const;
 };
 
 }   // namespace graph

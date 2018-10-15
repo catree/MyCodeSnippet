@@ -19,8 +19,7 @@ file(GLOB UNIT_TEST_FILE *_test.cpp)
 
 list(REMOVE_ITEM SFM_GEOMETRY_CPP ${UNIT_TEST_FILE})
 
-add_library(sfm_geometry 
-            # SHARED
+add_library(sfm_geometry
             ${SFM_GEOMETRY_HEADER} 
             ${SFM_GEOMETRY_CPP})
 target_link_libraries(sfm_geometry 

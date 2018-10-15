@@ -12,13 +12,13 @@ bool BaseFundamental(const std::vector<Eigen::Vector3d>& points1,
         return false;
     }
 
-    Eigen::Matrix<double, 9, 1> h = Eigen::Matrix<double, 9, 1>::Zero();
-    Eigen::MatrixXd A = Eigen::MatrixXd::Idendity();
     uint size = points1.size();
-
+    Eigen::Matrix<double, 9, 1> h = Eigen::Matrix<double, 9, 1>::Zero();
+    Eigen::MatrixXd A = Eigen::MatrixXd::Identity(size, 8);
+    
     for (uint i = 0; i < size; i++) {
         A(i, 0) = points1[i][0] * points2[i][0];
-        A(i, 1) = points1[i][1] * points2[i]0];
+        A(i, 1) = points1[i][1] * points2[i][0];
         A(i, 2) = points1[i][0];
         A(i, 3) = points1[i][0] * points2[i][1];
         A(i, 4) = points1[i][1] * points2[i][1];
@@ -54,10 +54,11 @@ bool NormalizedFundamental(const std::vector<Eigen::Vector3d>& points1,
 
     Eigen::Matrix3d F = Eigen::Matrix3d::Zero();
     BaseFundamental(norm_points1, norm_points2, fundamental);
-    Eigen::Matrix3d fundamental = sim2.transpose() * F * sim1;
+    Eigen::Matrix3d f = Eigen::Matrix3d::Zero();
+    f = sim2.transpose() * F * sim1;
     for (uint i = 0; i < 3; i++) {
         for (uint j = 0; j < 3; j++) {
-            fundamental(i, j) /= fundamental(2, 2);
+            // f(i, j) /= f(2, 2);
         }
     }
     return size;
