@@ -1,4 +1,5 @@
 add_subdirectory(feature)
 add_subdirectory(geometry)
 add_subdirectory(graph)
+add_subdirectory(image)
 add_subdirectory(math)
