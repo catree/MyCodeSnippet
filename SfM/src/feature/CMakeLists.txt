@@ -2,13 +2,14 @@ set(targetname feature)
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-set(headers Sift.h)
-set(sources Sift.cpp)
+set(headers Sift.h Feature.h)
+set(sources Sift.cpp Feature.cpp)
 
 include(${PROJECT_SOURCE_DIR}/cmake/FindOpenImageIO.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/FindVlFeat.cmake)
 
-# include(${PROJECT_SOURCE_DIR}/cmake/SetAppsTargetname.cmake)
+
+# set target name
 include(${PROJECT_SOURCE_DIR}/cmake/SetLibsTargetname.cmake)
 
 include(${PROJECT_SOURCE_DIR}/cmake/LinkOpenImageIO.cmake)
@@ -22,5 +23,13 @@ target_link_libraries(${targetname}
 
 # executables
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+if(WITH_OPENCV)
+    include(${PROJECT_SOURCE_DIR}/cmake/UseOpenCV.cmake)
+endif()
+
 add_executable(sift_test sift_test.cpp)
+
+if(WITH_OPENCV)
+    include(${PROJECT_SOURCE_DIR}/cmake/LinkOpenCV.cmake)
+endif()
 target_link_libraries(sift_test image feature)   

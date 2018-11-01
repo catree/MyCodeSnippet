@@ -26,8 +26,14 @@ Sift::~Sift()
     if (_filt) { vl_sift_delete(_filt); _filt = nullptr; }
 }
 
-bool Sift::ConfigureSift(int edge_thresh, int peak_thresh, int magnif)
-{
+bool Sift::ConfigureSift(bool compute_orientations, 
+                         bool compute_descriptors, 
+                         int edge_thresh, 
+                         int peak_thresh, 
+                         int magnif)
+{   
+    _force_orientations = compute_orientations;
+    _force_descriptors = compute_descriptors;
     if (edge_thresh >= 0) vl_sift_set_edge_thresh(_filt, edge_thresh);
     if (peak_thresh >= 0) vl_sift_set_peak_thresh(_filt, peak_thresh);
     if (magnif >= 0)  vl_sift_set_magnif(_filt, magnif);
@@ -37,15 +43,17 @@ bool Sift::ConfigureSift(int edge_thresh, int peak_thresh, int magnif)
 void Sift::ShowSiftSettings()
 {
     std::cout << "SIFT - Filter Settings:\n";
-    std::cout << "SIFT - Octaves:              " << vl_sift_get_noctaves(_filt)     << std::endl;
-    std::cout << "SIFT - Levels:               " << vl_sift_get_nlevels(_filt)      << std::endl;
-    std::cout << "SIFT - First Octave (o_min): " << vl_sift_get_octave_first(_filt) << std::endl;
-    std::cout << "SIFT - Edge Threshold:       " << vl_sift_get_edge_thresh(_filt)  << std::endl;
-    std::cout << "SIFT - Peak Threshold:       " << vl_sift_get_peak_thresh(_filt)  << std::endl;
-    std::cout << "SIFT - Magnification:        " << vl_sift_get_magnif(_filt)       << std::endl;
+    std::cout << "SIFT - Octaves:              " << vl_sift_get_noctaves(_filt)          << "\n";
+    std::cout << "SIFT - Levels:               " << vl_sift_get_nlevels(_filt)           << "\n";
+    std::cout << "SIFT - First Octave (o_min): " << vl_sift_get_octave_first(_filt)      << "\n";
+    std::cout << "SIFT - Edge Threshold:       " << vl_sift_get_edge_thresh(_filt)       << "\n";
+    std::cout << "SIFT - Peak Threshold:       " << vl_sift_get_peak_thresh(_filt)       << "\n";
+    std::cout << "SIFT - Magnification:        " << vl_sift_get_magnif(_filt)            << "\n";
+    std::cout << "SIFT - Force Orientations:   " << (_force_orientations ? "YES" : "NO") << "\n";
+    std::cout << "SIFT - Force Descriptors:    " << (_force_descriptors ? "YES" : "NO")  << "\n";
 }
 
-bool Sift::Extract()
+bool Sift::Extract(std::vector<SiftFeature>& sift_features)
 {
     // Process the first octave
     if (vl_sift_process_first_octave(_filt, _image_data) == VL_ERR_EOF) {
@@ -66,6 +74,7 @@ bool Sift::Extract()
             int angles_num;
             VlSiftKeypoint ik;
             VlSiftKeypoint const *k;
+            sfm::feature::SiftFeature sift_feature;
 
             // TODO: process ikeys (not necessary)
             double *ikeys = nullptr;
@@ -79,30 +88,31 @@ bool Sift::Extract()
                 k = &ik;
 
                 // Optionally compute orientations too
-                bool force_orientations = true;
-                if (force_orientations) {
+                if (_force_orientations) {
                     angles_num = vl_sift_calc_keypoint_orientations(_filt, angles, k);
                 } else {
                     angles[0] = ikeys[4 * i + 3];
                     angles_num = 1;
                 }
             } else {
-                k = keypoints + 1;
+                k = keypoints + i;
                 angles_num = vl_sift_calc_keypoint_orientations(_filt, angles, k);
             }
 
-            // TODO: draw circle using OpenCV
-            // cv::circle(Image, cv::Point(k->x, k->y, k->sigma / 2, CV_RGB(255, 0, 0)));
-
             // for each orientation
             for (unsigned int q = 0; q < (unsigned)angles_num; q++) {
+                sift_feature.SetAngle(angles[q]);
                 vl_sift_pix descriptor[128];
                 // Optionally: compute descriptor
-                bool force_descriptor = true;
-                if (force_descriptor) {
+                if (_force_descriptors) {
                     vl_sift_calc_keypoint_descriptor(_filt, descriptor, k, angles[q]);
+                    sift_feature.SetDescriptor(descriptor);
                 }
             }
+            
+            sift_feature.SetLocation(k->x, k->y);
+            sift_feature.SetScale(k->sigma);
+            sift_features.push_back(sift_feature);
         }   // end of outer for loop
 
         // Process the next octave
