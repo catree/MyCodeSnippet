@@ -74,7 +74,7 @@ bool Sift::Extract(std::vector<SiftFeature>& sift_features)
             int angles_num;
             VlSiftKeypoint ik;
             VlSiftKeypoint const *k;
-            sfm::feature::SiftFeature sift_feature;
+            
 
             // TODO: process ikeys (not necessary)
             double *ikeys = nullptr;
@@ -101,6 +101,7 @@ bool Sift::Extract(std::vector<SiftFeature>& sift_features)
 
             // for each orientation
             for (unsigned int q = 0; q < (unsigned)angles_num; q++) {
+                sfm::feature::SiftFeature sift_feature;
                 sift_feature.SetAngle(angles[q]);
                 vl_sift_pix descriptor[128];
                 // Optionally: compute descriptor
@@ -108,11 +109,10 @@ bool Sift::Extract(std::vector<SiftFeature>& sift_features)
                     vl_sift_calc_keypoint_descriptor(_filt, descriptor, k, angles[q]);
                     sift_feature.SetDescriptor(descriptor);
                 }
+                sift_feature.SetLocation(k->x, k->y);
+                sift_feature.SetScale(k->sigma);
+                sift_features.push_back(sift_feature);
             }
-            
-            sift_feature.SetLocation(k->x, k->y);
-            sift_feature.SetScale(k->sigma);
-            sift_features.push_back(sift_feature);
         }   // end of outer for loop
 
         // Process the next octave

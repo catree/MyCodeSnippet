@@ -42,20 +42,20 @@ private:
      * returns a list of up to four possible orientations, constructing up to four
      * frames (differing only by their orientation) for each detected image blob.
      */
-    std::vector<double> _angles;
-    std::vector<vl_sift_pix*> _descriptors;
+    double _angles;
+    vl_sift_pix* _descriptors;
 
 public:
     SiftFeature() { }
     SiftFeature(int x, int y, int s) : FeatureBase(x, y) { _scale = s; }
 
     void SetScale(double s) { _scale = s; }
-    void SetAngle(double angle) { _angles.push_back(angle); }
-    void SetDescriptor(vl_sift_pix* des) { _descriptors.push_back(des); }
+    void SetAngle(double angle) { _angles = angle; }
+    void SetDescriptor(vl_sift_pix* des) { _descriptors = des; }
 
     double GetScale() const { return _scale; }
-    std::vector<double> GetAngles() const { return _angles; }
-    std::vector<vl_sift_pix*> GetDescriptors() const { return _descriptors; }
+    double GetAngles() const { return _angles; }
+    vl_sift_pix* GetDescriptors() const { return _descriptors; }
 };
 
 }   // namespace feature
