@@ -1,4 +1,4 @@
-# An Even Easier Introduction to CUDA
+# Chapter 01 - An Even Easier Introduction to CUDA
 
 
 
@@ -122,7 +122,7 @@ int main()
 
 ## 4. CUDA中的几个常用变量
 
-```CUDA```的GPU中有许多并行处理器被分在了```Streaming Multiprocessors (SMs)```中。每个SM能够运行多个并发的线程块。比如基于Pascal GPU架构的Tesla P100，么个SM能够支持最多2048个活跃线程。
+```CUDA```的GPU中有许多并行处理器被分在了```Streaming Multiprocessors (SMs)```中。每个SM能够运行多个并发的线程块。比如基于Pascal GPU架构的Tesla P100，每个SM能够支持最多2048个活跃线程。
 
 访问这些线程的几个基本概念(**一维的情况下**)：
 - ```grid```： 可并行的线程块构成一个grid.
