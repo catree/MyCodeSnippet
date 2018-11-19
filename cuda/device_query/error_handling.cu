@@ -35,7 +35,12 @@ int main()
     // Get the error variable and resets it to cudaSuccess
     cudaError_t errSync = cudaGetLastError();
 
+    // Asynchronous error s which occur on the device after control
+    // is returned to the host, such as out-of-bounds memory accesses, 
+    // require a synchronization mechanism. Any asynchronous eror is
+    // returned by cudaDeviceSynchronize().
     cudaError_t errAsync = cudaDeviceSynchronize();
+    
     if (errSync != cudaSuccess) { 
         printf("Sync kernel error: %s\n", cudaGetErrorString(errSync)); 
     }
