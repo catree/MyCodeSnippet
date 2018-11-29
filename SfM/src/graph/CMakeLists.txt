@@ -11,8 +11,9 @@ list(REMOVE_ITEM SFM_GRAPH_CPP ${UNIT_TEST_FILE})
 add_executable(graph_test Graph_test.cpp)
 target_link_libraries(graph_test gtest_main)
 
-add_test(NAME graph_test COMMAND graph_test)
 enable_testing()
+add_test(NAME graph_test COMMAND graph_test)
+
 
 add_library(sfm_graph
             ${SFM_GRAPH_HEADER}
